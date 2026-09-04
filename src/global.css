@@ -1,0 +1,163 @@
+@import url("https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: #ffffff;
+  color: #0a0a0a;
+  font-family: "Jost", sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.mothership-app {
+  min-height: 100dvh;
+  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.generator-card {
+  width: min(860px, 100%);
+  border: 1px solid #111;
+  border-radius: 18px;
+  background: #fff;
+  padding: 1rem;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4.8vw, 3rem);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.app-header p {
+  margin: 0.4rem 0 1rem;
+  font-size: clamp(1rem, 2.8vw, 1.3rem);
+  letter-spacing: 0.02em;
+}
+
+.roll-all-btn {
+  border: 1px solid #111;
+  border-radius: 11px;
+  background: #fff;
+  color: #111;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.roll-all-btn:hover {
+  background: #111;
+  color: #fff;
+}
+
+.field-list {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.field-row {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.field-control-wrap {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+}
+
+.field-input {
+  width: 100%;
+  border: 1px solid #111;
+  border-radius: 11px;
+  background: #fff;
+  padding: 0.72rem 0.85rem;
+  color: #111;
+}
+
+.field-input:focus-visible,
+.field-roll-btn:focus-visible,
+.roll-all-btn:focus-visible,
+.app-footer a:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+.field-roll-btn {
+  width: 46px;
+  border: 1px solid #111;
+  border-radius: 11px;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 120ms ease;
+}
+
+.field-roll-btn:hover {
+  background: #efefef;
+}
+
+.dice-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.app-footer {
+  margin-top: 1rem;
+  border-top: 1px solid #111;
+  padding-top: 0.8rem;
+  display: flex;
+  justify-content: center;
+}
+
+.app-footer a {
+  color: #111;
+  align-items: center;
+}
+
+.itch-icon {
+    width: 35px;
+  height: 35px;
+  opacity: 0.7;
+}
+
+@media (max-width: 640px) {
+  .mothership-app {
+    padding: 0.7rem;
+  }
+
+  .generator-card {
+    padding: 0.8rem;
+    border-radius: 14px;
+  }
+
+  .field-input {
+    padding: 0.65rem 0.72rem;
+  }
+}
