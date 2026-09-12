@@ -985,7 +985,7 @@ function CreateRoute({ search, onNavigate }) {
               <br/>
               <div className="nameplate-lines" aria-label="Name and background">
                 <p>{name || "Unnamed"}</p>
-                <br/>
+                <hr style={{width: "10%"}} />
                 <p>{background.title}</p>
               </div>
               <br/>
