@@ -30,27 +30,27 @@
 # loadouts
 ## Android
 > can pick 2 skills
-a1: Companion = Personality Emulator, Small pet or drone, Hacking Spike, Repair Foam [computers, linguistics]
-a2: Liberator = Signal Jammer, Voice Modulator, Another's Data Core, Boarding Axe 1d10+2 [computers, linguistics]
-a3: Indentured = Corporate Chip, Small pet or drone, Stun Baton 1d5+2, Holographic projector [computers, linguistics]
+s3: Companion = Personality Emulator, Small pet or drone, Hacking Spike, Repair Foam [computers, linguistics]
+m1: Liberator = Signal Jammer, Voice Modulator, Another's Data Core, Boarding Axe 1d10+2 [computers, linguistics]
+t3: Indentured = Corporate Chip, Small pet or drone, Stun Baton 1d5+2, Holographic projector [computers, linguistics]
 
 ## Marine
 > marines can pick 2 skills
-m1: Mercenary = Combat Knife 1d5+3, Infrared Goggles, Flashbang, Duct Tape [military training, athletics]
-m2: Bounty Hunter = Tranquilizer Rifle [2 ammo], Breaching Charge, Binoculars, Thermal Camera [military training, athletics]
-m3: Fugitive = Revolver 1d10+2 [3 ammo], Fake ID, Inert Ankle Monitor, Zip Ties [military training, athletics]
+a2: Mercenary = Combat Knife 1d5+3, Infrared Goggles, Flashbang, Duct Tape [military training, athletics]
+s1: Bounty Hunter = Tranquilizer Rifle [2 ammo], Breaching Charge, Binoculars, Thermal Camera [military training, athletics]
+t2: Fugitive = Revolver 1d10+2 [3 ammo], Fake ID, Inert Ankle Monitor, Zip Ties [military training, athletics]
 
 
 ## Teamster
 > teamsters can pick 3 skills
-t1: Union Representative = Laser Cutter 1d5+2, Industrial Drill, Handheld Radio, Toolbelt with tools [rimwise]
-t2: Executive = Key Card, Audio Recorder, Motion Tracker, Secret Documents [rimwise]
-t3: Journalist = Camera, Portable Scanner, Crowbar 1d5+1, Welding Torch [rimwise]
+s2: Union Representative = Laser Cutter 1d5+2, Industrial Drill, Handheld Radio, Toolbelt with tools [rimwise]
+m3: Executive = Key Card, Audio Recorder, Motion Tracker, Secret Documents [rimwise]
+a3: Journalist = Camera, Portable Scanner, Crowbar 1d5+1, Welding Torch [rimwise]
 
 ## Scientist
 > can pick 4 skills
-s1: Analyst = Serum, Surgical Kit, Electronic Tool set, Tranquilizer Injector [field medicine]
-s2: Professor = Serum, Portable Computer Terminal, Gene Sampler, First Aid Kit [field medicine]
-s3: Curator = Stimpack, Containment Supplies, Bioscanner, Face Mask [field medicine]
+m2: Analyst = Serum, Surgical Kit, Electronic Tool set, Tranquilizer Injector [field medicine]
+t1: Professor = Serum, Portable Computer Terminal, Gene Sampler, First Aid Kit [field medicine]
+a1: Curator = Stimpack, Containment Supplies, Bioscanner, Face Mask [field medicine]
 
 

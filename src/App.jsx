@@ -345,85 +345,85 @@ const CLASS_INFO = {
 }
 
 const BACKGROUND_BY_CODE = {
-  a1: {
-    code: "a1",
+  s3: {
+    code: "s3",
     className: "Android",
     title: "Companion",
     defaultSkills: ["computers", "linguistics"],
     loadout: ["Personality Emulator", "Small pet or drone", "Hacking Spike", "Repair Foam"],
   },
-  a2: {
-    code: "a2",
+  m1: {
+    code: "m1",
     className: "Android",
     title: "Liberator",
     defaultSkills: ["computers", "linguistics"],
     loadout: ["Signal Jammer", "Voice Modulator", "Another's Data Core", "Boarding Axe 1d10+2"],
   },
-  a3: {
-    code: "a3",
+  t3: {
+    code: "t3",
     className: "Android",
     title: "Indentured",
     defaultSkills: ["computers", "linguistics"],
     loadout: ["Corporate Chip", "Small pet or drone", "Stun Baton 1d5+2", "Holographic projector"],
   },
-  m1: {
-    code: "m1",
+  a2: {
+    code: "a2",
     className: "Marine",
     title: "Mercenary",
     defaultSkills: ["military-training", "athletics"],
     loadout: ["Combat Knife 1d5+3", "Infrared Goggles", "Flashbang", "Duct Tape"],
   },
-  m2: {
-    code: "m2",
+  s1: {
+    code: "s1",
     className: "Marine",
     title: "Bounty Hunter",
     defaultSkills: ["military-training", "athletics"],
     loadout: ["Tranquilizer Rifle [2 ammo]", "Breaching Charge", "Binoculars", "Thermal Camera"],
   },
-  m3: {
-    code: "m3",
+  t2: {
+    code: "t2",
     className: "Marine",
     title: "Fugitive",
     defaultSkills: ["military-training", "athletics"],
     loadout: ["Revolver 1d10+2 [3 ammo]", "Fake ID", "Inert Ankle Monitor", "Zip Ties"],
   },
-  t1: {
-    code: "t1",
+  s2: {
+    code: "s2",
     className: "Teamster",
     title: "Union Representative",
     defaultSkills: ["rimwise"],
     loadout: ["Laser Cutter 1d5+2", "Industrial Drill", "Handheld Radio", "Toolbelt with tools"],
   },
-  t2: {
-    code: "t2",
+  m3: {
+    code: "m3",
     className: "Teamster",
     title: "Executive",
     defaultSkills: ["rimwise"],
     loadout: ["Key Card", "Audio Recorder", "Motion Tracker", "Secret Documents"],
   },
-  t3: {
-    code: "t3",
+  a3: {
+    code: "a3",
     className: "Teamster",
     title: "Journalist",
     defaultSkills: ["rimwise"],
     loadout: ["Camera", "Portable Scanner", "Crowbar 1d5+1", "Welding Torch"],
   },
-  s1: {
-    code: "s1",
+  m2: {
+    code: "m2",
     className: "Scientist",
     title: "Analyst",
     defaultSkills: ["field-medicine"],
     loadout: ["Serum", "Surgical Kit", "Electronic Tool set", "Tranquilizer Injector"],
   },
-  s2: {
-    code: "s2",
+  t1: {
+    code: "t1",
     className: "Scientist",
     title: "Professor",
     defaultSkills: ["field-medicine"],
     loadout: ["Serum", "Portable Computer Terminal", "Gene Sampler", "First Aid Kit"],
   },
-  s3: {
-    code: "s3",
+  a1: {
+    code: "a1",
     className: "Scientist",
     title: "Curator",
     defaultSkills: ["field-medicine"],
