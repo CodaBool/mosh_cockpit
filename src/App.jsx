@@ -337,6 +337,56 @@ const MAP_ROUTES = {
 const CREATE_ROUTE = "/c"
 const TOTAL_CREATOR_STEPS = 7
 
+const NAMEPLATE_OVERLAY_TWEAKS = {
+  xPercent: 48,
+  yPercent: 40,
+  widthPercent: 64,
+  rotateXDeg: 10,
+  rotateYDeg: 12,
+  rotateZDeg: -7,
+  skewXDeg: 25,
+  skewYDeg: -14,
+  scaleX: 2.58,
+  scaleY: 1.95,
+  perspectivePx: 900,
+  lineGapEm: 0.8,
+  dividerWidthPercent: 10,
+}
+
+const NAMEPLATE_OVERLAY_STYLE = {
+  "--plate-x": `${NAMEPLATE_OVERLAY_TWEAKS.xPercent}%`,
+  "--plate-y": `${NAMEPLATE_OVERLAY_TWEAKS.yPercent}%`,
+  "--plate-width": `${NAMEPLATE_OVERLAY_TWEAKS.widthPercent}%`,
+  "--plate-rotate-x": `${NAMEPLATE_OVERLAY_TWEAKS.rotateXDeg}deg`,
+  "--plate-rotate-y": `${NAMEPLATE_OVERLAY_TWEAKS.rotateYDeg}deg`,
+  "--plate-rotate-z": `${NAMEPLATE_OVERLAY_TWEAKS.rotateZDeg}deg`,
+  "--plate-skew-x": `${NAMEPLATE_OVERLAY_TWEAKS.skewXDeg}deg`,
+  "--plate-skew-y": `${NAMEPLATE_OVERLAY_TWEAKS.skewYDeg}deg`,
+  "--plate-scale-x": NAMEPLATE_OVERLAY_TWEAKS.scaleX,
+  "--plate-scale-y": NAMEPLATE_OVERLAY_TWEAKS.scaleY,
+  "--plate-perspective": `${NAMEPLATE_OVERLAY_TWEAKS.perspectivePx}px`,
+  "--plate-line-gap": `${NAMEPLATE_OVERLAY_TWEAKS.lineGapEm}em`,
+  "--plate-divider-width": `${NAMEPLATE_OVERLAY_TWEAKS.dividerWidthPercent}%`,
+}
+
+const STEP3_NAMEPLATE_STYLE = {
+  ...NAMEPLATE_OVERLAY_STYLE,
+  "--plate-x": `${NAMEPLATE_OVERLAY_TWEAKS.xPercent + 10}%`,
+}
+
+const STEP4_NAMEPLATE_TWEAKS = {
+  xOffsetPercent: 10,
+  yOffsetPercent: 28,
+  widthOffsetPercent: 0,
+}
+
+const STEP4_NAMEPLATE_STYLE = {
+  ...NAMEPLATE_OVERLAY_STYLE,
+  "--plate-x": `${NAMEPLATE_OVERLAY_TWEAKS.xPercent + STEP4_NAMEPLATE_TWEAKS.xOffsetPercent}%`,
+  "--plate-y": `${NAMEPLATE_OVERLAY_TWEAKS.yPercent + STEP4_NAMEPLATE_TWEAKS.yOffsetPercent}%`,
+  "--plate-width": `${NAMEPLATE_OVERLAY_TWEAKS.widthPercent + STEP4_NAMEPLATE_TWEAKS.widthOffsetPercent}%`,
+}
+
 const CLASS_INFO = {
   Android: { skillPickCount: 2, icon: "/android.webp" },
   Marine: { skillPickCount: 2, icon: "/marine.webp" },
@@ -357,42 +407,42 @@ const BACKGROUND_BY_CODE = {
     className: "Android",
     title: "Liberator",
     defaultSkills: ["computers", "linguistics"],
-    loadout: ["Signal Jammer", "Voice Modulator", "Another's Data Core", "Boarding Axe 1d10+2"],
+    loadout: ["Signal Jammer", "Voice Modulator", "Another's Data Core", "Boarding Axe | 1d10+2"],
   },
   t3: {
     code: "t3",
     className: "Android",
     title: "Indentured",
     defaultSkills: ["computers", "linguistics"],
-    loadout: ["Corporate Chip", "Small pet or drone", "Stun Baton 1d5+2", "Holographic projector"],
+    loadout: ["Corporate Chip", "Small pet or drone", "Stun Baton | 1d5+2", "Holographic projector"],
   },
   a2: {
     code: "a2",
     className: "Marine",
     title: "Mercenary",
     defaultSkills: ["military-training", "athletics"],
-    loadout: ["Combat Knife 1d5+3", "Infrared Goggles", "Flashbang", "Duct Tape"],
+    loadout: ["Combat Knife | 1d5+3", "Infrared Goggles", "Flashbang", "Duct Tape"],
   },
   s1: {
     code: "s1",
     className: "Marine",
     title: "Bounty Hunter",
     defaultSkills: ["military-training", "athletics"],
-    loadout: ["Tranquilizer Rifle [2 ammo]", "Breaching Charge", "Binoculars", "Thermal Camera"],
+    loadout: ["Tranquilizer Rifle | 0 | 2 |", "Breaching Charge", "Binoculars", "Thermal Camera"],
   },
   t2: {
     code: "t2",
     className: "Marine",
     title: "Fugitive",
     defaultSkills: ["military-training", "athletics"],
-    loadout: ["Revolver 1d10+2 [3 ammo]", "Fake ID", "Inert Ankle Monitor", "Zip Ties"],
+    loadout: ["Revolver |1d10+2|3", "Fake ID", "Inert Ankle Monitor", "Zip Ties"],
   },
   s2: {
     code: "s2",
     className: "Teamster",
     title: "Union Representative",
     defaultSkills: ["rimwise"],
-    loadout: ["Laser Cutter 1d5+2", "Industrial Drill", "Handheld Radio", "Toolbelt with tools"],
+    loadout: ["Laser Cutter |1d5+2", "Industrial Drill", "Handheld Radio", "Toolbelt with tools"],
   },
   m3: {
     code: "m3",
@@ -459,8 +509,6 @@ const SKILL_OPTIONS = [
 ]
 
 const SKILL_LOOKUP = Object.fromEntries(SKILL_OPTIONS.map(skill => [skill.id, skill]))
-const ROOT_SKILLS = SKILL_OPTIONS.filter(skill => !skill.parent)
-const CHILD_SKILLS = SKILL_OPTIONS.filter(skill => skill.parent)
 
 const LEFT_SKILL_ORDER = [
   "history",
@@ -506,6 +554,26 @@ const MALE_NAMES = [
   "Damon Vale",
   "Felix Warden",
   "Tobias Quill",
+  "Gideon Marsh",
+  "Bran Cormac",
+  "Levi Draven",
+  "Marcus Thorne",
+  "Cassian Locke",
+  "Elias Fen",
+  "Victor Haines",
+  "Rhett Maddox",
+  "Caleb Dyer",
+  "Arlo Kane",
+  "Jonah Wraith",
+  "Bastian Cole",
+  "Darius Holt",
+  "Milo Keene",
+  "Tristan Vane",
+  "Galen Ward",
+  "Declan Graves",
+  "Evan Rooke",
+  "Lucian Frost",
+  "Nate Sterling",
 ]
 
 const FEMALE_NAMES = [
@@ -519,6 +587,26 @@ const FEMALE_NAMES = [
   "Cora Fenwick",
   "Elara Stone",
   "Juniper Voss",
+  "Talia Rune",
+  "Freya Calder",
+  "Zara Quinn",
+  "Mina Vex",
+  "Arden Cross",
+  "Sloane Mercer",
+  "Dahlia Pike",
+  "Bianca Hollow",
+  "Rhea Stroud",
+  "Keira Nyx",
+  "Nola Harrow",
+  "Maeve Sinclair",
+  "Lena Draven",
+  "Petra Vale",
+  "Sabine Locke",
+  "Wren Ashford",
+  "Yara Kade",
+  "Opal Thorn",
+  "Kira Morrow",
+  "Anika Frost",
 ]
 
 const NEUTRAL_NAMES = [
@@ -532,6 +620,26 @@ const NEUTRAL_NAMES = [
   "Rowe Archer",
   "Kestrel Morrow",
   "Onyx Vale",
+  "Harbor Wren",
+  "Cinder Hale",
+  "Sol Harper",
+  "Echo Briar",
+  "Pax Rook",
+  "Vale Arden",
+  "Mica Thorne",
+  "River Quill",
+  "Lumen Cross",
+  "Ash Sterling",
+  "Briar Vance",
+  "Zephyr Knox",
+  "Marlow Finch",
+  "Rune Harlow",
+  "Talon Gray",
+  "Sable Quinn",
+  "Fable Stone",
+  "Kai Holloway",
+  "Peregrine Ash",
+  "Indra Vale",
 ]
 
 function getLocationState() {
@@ -556,6 +664,15 @@ function randomName(gender) {
 function parseBackgroundCode(search) {
   const params = new URLSearchParams(search)
   return (params.get("b") || "").toLowerCase()
+}
+
+function parseLoadoutEntry(entry) {
+  const [itemPart = "", damagePart = "", ...ammoParts] = entry.split("|")
+  return {
+    item: itemPart.trim(),
+    damage: damagePart.trim(),
+    ammo: ammoParts.join("|").trim(),
+  }
 }
 
 function rollAllFields() {
@@ -772,11 +889,17 @@ function CreateRoute({ search, onNavigate }) {
     setStep(prev => Math.max(1, prev - 1))
   }
 
+  function rollRandomName(nextGender) {
+    setGender(nextGender)
+    setName(randomName(nextGender))
+  }
+
   const additionalSkillCount = selectedSkills.size - lockedSkills.size
   const skillCountComplete = additionalSkillCount === classMeta.skillPickCount
   const canGoNext = step === 1 ? skillCountComplete : step === 2 ? name.trim().length > 0 : true
 
   const selectedSkillLabels = SKILL_OPTIONS.filter(skill => selectedSkills.has(skill.id)).map(skill => skill.label)
+  const loadoutRows = background.loadout.map(parseLoadoutEntry)
   const displayBackground = `${background.className} - ${background.title}`
   const linksWrapRef = useRef(null)
   const parentSkillRefs = useRef({})
@@ -831,7 +954,7 @@ function CreateRoute({ search, onNavigate }) {
   }, [selectedSkills, step])
 
   return (
-    <main className="mothership-app creator-app">
+    <main className={`mothership-app creator-app creator-app-step${step}`}>
       <section className="generator-card creator-card">
         <header className="app-header">
           <h1>Create Character</h1>
@@ -944,10 +1067,7 @@ function CreateRoute({ search, onNavigate }) {
                   <button
                     type="button"
                     className={`gender-btn ${gender === "male" ? "active" : ""}`}
-                    onClick={() => {
-                      setGender("male")
-                      setName(randomName("male"))
-                    }}
+                    onClick={() => rollRandomName("male")}
                   >
                     <img src="/male.svg" alt="Male" />
                     Male
@@ -955,10 +1075,7 @@ function CreateRoute({ search, onNavigate }) {
                   <button
                     type="button"
                     className={`gender-btn ${gender === "female" ? "active" : ""}`}
-                    onClick={() => {
-                      setGender("female")
-                      setName(randomName("female"))
-                    }}
+                    onClick={() => rollRandomName("female")}
                   >
                     <img src="/female.svg" alt="Female" />
                     Female
@@ -966,10 +1083,7 @@ function CreateRoute({ search, onNavigate }) {
                   <button
                     type="button"
                     className={`gender-btn ${gender === "neutral" ? "active" : ""}`}
-                    onClick={() => {
-                      setGender("neutral")
-                      setName(randomName("neutral"))
-                    }}
+                    onClick={() => rollRandomName("neutral")}
                   >
                     <img src="/gender_neutral.svg" alt="Gender neutral" />
                     Neutral
@@ -981,34 +1095,55 @@ function CreateRoute({ search, onNavigate }) {
 
           {step === 3 ? (
             <>
-              <p className="creator-note" style={{fontSize: "1.2em", textAlign: "center"}}>Write <b>{name || "Unnamed"}</b> and your background, <b>{background.title}</b>, on your dry erase nameplate.</p>
-              <br/>
-              <div className="nameplate-lines" aria-label="Name and background">
-                <p>{name || "Unnamed"}</p>
-                <hr style={{width: "10%"}} />
-                <p>{background.title}</p>
+              <p className="creator-note" style={{fontSize: "1.2em", textAlign: "center"}}>Write your <b>name</b> and your <b>background</b>, on your dry erase nameplate.</p>
+              <div className="nameplate-example nameplate-example-step3" style={STEP3_NAMEPLATE_STYLE}>
+                <img src="/example_nameplate.webp" alt="Example nameplate" className="creator-example creator-example-step3" />
+                <div className="nameplate-overlay" aria-hidden="true">
+                  <p className="nameplate-overlay-name">{name || "Unnamed"}</p>
+                  <hr className="nameplate-overlay-divider" />
+                  <p className="nameplate-overlay-background">{background.title}</p>
+                </div>
               </div>
-              <br/>
-              <img src="/example_nameplate.webp" alt="Example nameplate" className="creator-example creator-example-step3" />
             </>
           ) : null}
 
           {step === 4 ? (
             <>
               <p className="creator-note" style={{fontSize: "1.2em"}}>Pick a portrait and place it on the top gap of the nameplate.</p>
-              <br/>
-              <img src="/example_portrait.webp" alt="Example portrait placement" className="creator-example creator-example-step4" />
+              <div className="nameplate-example nameplate-example-step4" style={STEP4_NAMEPLATE_STYLE}>
+                <img src="/example_portrait.webp" alt="Example portrait placement" className="creator-example creator-example-step4" />
+                <div className="nameplate-overlay" aria-hidden="true">
+                  <p className="nameplate-overlay-name">{name || "Unnamed"}</p>
+                  <hr className="nameplate-overlay-divider" />
+                  <p className="nameplate-overlay-background">{background.title}</p>
+                </div>
+              </div>
             </>
           ) : null}
 
           {step === 5 ? (
             <>
               <p className="creator-note" style={{fontSize: "1.3em"}}>Copy these loadout items to your booklet.</p>
-              <ul className="creator-list" style={{fontSize: "1.3em"}}>
-                {background.loadout.map(item => (
-                  <li key={item}><b>{item}</b></li>
-                ))}
-              </ul>
+              <div className="creator-loadout-table-wrap">
+                <table className="creator-loadout-table" aria-label="Loadout table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Item</th>
+                      <th scope="col">Damage</th>
+                      <th scope="col">Ammo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loadoutRows.map((row, index) => (
+                      <tr key={`${row.item || "item"}-${index}`}>
+                        <td>{row.item}</td>
+                        <td>{row.damage}</td>
+                        <td>{row.ammo}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
               <img src="/example_item.webp" alt="Example loadout items" className="creator-example creator-example-step5" />
             </>
           ) : null}

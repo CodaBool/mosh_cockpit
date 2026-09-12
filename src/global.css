@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap");
 
 * {
   box-sizing: border-box;
@@ -273,6 +274,8 @@ input {
   cursor: pointer;
   transition: background 120ms ease, color 120ms ease, opacity 120ms ease;
   align-self: start;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .skill-child-chip {
@@ -309,11 +312,17 @@ input {
   filter: invert(1);
 }
 
-.skill-chip:hover,
 .skill-chip:focus-visible,
 .skill-chip.active {
   background: #111;
   color: #fff;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .skill-chip:hover {
+    background: #111;
+    color: #fff;
+  }
 }
 
 .skill-chip:disabled {
@@ -359,6 +368,8 @@ input {
   padding: 0.38rem 0.68rem;
   cursor: pointer;
   transition: background 120ms ease, color 120ms ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .gender-btn img {
@@ -367,16 +378,25 @@ input {
 }
 
 .gender-btn.active,
-.gender-btn:hover,
 .gender-btn:focus-visible {
   background: #111;
   color: #fff;
 }
 
 .gender-btn.active img,
-.gender-btn:hover img,
 .gender-btn:focus-visible img {
   filter: invert(1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gender-btn:hover {
+    background: #111;
+    color: #fff;
+  }
+
+  .gender-btn:hover img {
+    filter: invert(1);
+  }
 }
 
 .creator-example {
@@ -385,17 +405,57 @@ input {
   border-radius: 14px;
 }
 
-.nameplate-lines {
-  text-align: center;
-  display: grid;
-  gap: 0.2rem;
+.nameplate-example {
+  position: relative;
+  width: min(620px, 100%);
+  margin-inline: auto;
+  overflow: clip;
 }
 
-.nameplate-lines p {
+.nameplate-overlay {
+  position: absolute;
+  left: var(--plate-x, 50%);
+  top: var(--plate-y, 68%);
+  width: var(--plate-width, 64%);
+  text-align: center;
+  color: #161616;
+  transform-origin: center center;
+  transform:
+    translate(-50%, -50%)
+    perspective(var(--plate-perspective, 900px))
+    rotateX(var(--plate-rotate-x, 10deg))
+    rotateY(var(--plate-rotate-y, 12deg))
+    rotateZ(var(--plate-rotate-z, -7deg))
+    skewX(var(--plate-skew-x, -5deg))
+    skewY(var(--plate-skew-y, 0deg))
+    scaleX(var(--plate-scale-x, 1.08))
+    scaleY(var(--plate-scale-y, 0.85))
+    scale(var(--plate-text-scale, 1));
+  pointer-events: none;
+}
+
+.nameplate-overlay-name,
+.nameplate-overlay-background {
   margin: 0;
-  font-size: clamp(1.4rem, 4vw, 2rem);
-  font-weight: 600;
-  line-height: 1.1;
+  font-family: "Permanent Marker", cursive;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.nameplate-overlay-name {
+  font-size: clamp(1.1rem, 3vw, 1.9rem);
+}
+
+.nameplate-overlay-background {
+  font-size: clamp(0.95rem, 2.3vw, 1.45rem);
+}
+
+.nameplate-overlay-divider {
+  width: var(--plate-divider-width, 26%);
+  margin: var(--plate-line-gap, 0.2em) auto;
+  border: 0;
+  border-top: 2px solid #202020;
 }
 
 .creator-note-large {
@@ -405,24 +465,24 @@ input {
 
 .creator-example-step3 {
   display: block;
-  width: min(160px, 100%);
+  width: 100%;
   margin-inline: auto;
 }
 
 .creator-example-step4 {
   display: block;
-  width: min(160px, 100%);
+  width: 100%;
   margin-inline: auto;
 }
 
 .creator-example-step5 {
   display: block;
-  width: min(90px, 100%);
+  width: min(70px, 100%);
 }
 
 .creator-example-step6 {
   display: block;
-  width: min(90px, 100%);
+  width: min(80px, 100%);
 }
 
 .creator-list {
@@ -430,6 +490,34 @@ input {
   padding-left: 1.15rem;
   display: grid;
   gap: 0.25rem;
+}
+
+.creator-loadout-table-wrap {
+  border: 1px solid #111;
+  border-radius: 12px;
+  overflow: auto;
+}
+
+.creator-loadout-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 1.1rem;
+}
+
+.creator-loadout-table th,
+.creator-loadout-table td {
+  border: 1px solid #111;
+  padding: 0.55rem 0.65rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.creator-loadout-table th {
+  background: #f6f6f6;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .creator-nav {
@@ -509,6 +597,10 @@ input {
 }
 
 @media (max-width: 640px) {
+  body {
+    overflow-x: hidden;
+  }
+
   .mothership-app {
     padding: 0.7rem;
   }
@@ -597,6 +689,42 @@ input {
 
   .creator-nav {
     flex-wrap: wrap;
+  }
+
+  .creator-app-step3,
+  .creator-app-step4 {
+    min-height: 100svh;
+    max-height: 100svh;
+    overflow-x: hidden;
+    overflow-y: clip;
+  }
+
+  .creator-app-step3 .creator-card,
+  .creator-app-step4 .creator-card {
+    min-height: 0;
+    height: calc(100svh - 0.6rem);
+    max-height: calc(100svh - 0.6rem);
+    overflow: clip;
+  }
+
+  .creator-app-step3 .creator-panel,
+  .creator-app-step4 .creator-panel {
+    gap: 0.5rem;
+    margin-top: 0.55rem;
+  }
+
+  .creator-app-step3 .nameplate-example,
+  .creator-app-step4 .nameplate-example {
+    width: min(300px, 50vw);
+    --plate-text-scale: 0.5;
+  }
+
+  .nameplate-overlay-name {
+    font-size: clamp(0.95rem, 5vw, 1.35rem);
+  }
+
+  .nameplate-overlay-background {
+    font-size: clamp(0.78rem, 3.7vw, 1.05rem);
   }
 
   .map-page {
