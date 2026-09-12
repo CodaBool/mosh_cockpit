@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 
 const FLAWS = [
   "Quick to Anger",
@@ -334,6 +334,230 @@ const MAP_ROUTES = {
   "/gd-all": { label: "Overview", image: "/overview.webp", alt: "Deck map overview" },
 }
 
+const CREATE_ROUTE = "/c"
+const TOTAL_CREATOR_STEPS = 7
+
+const CLASS_INFO = {
+  Android: { skillPickCount: 2, icon: "/android.webp" },
+  Marine: { skillPickCount: 2, icon: "/marine.webp" },
+  Teamster: { skillPickCount: 3, icon: "/teamster.webp" },
+  Scientist: { skillPickCount: 4, icon: "/scientist.webp" },
+}
+
+const BACKGROUND_BY_CODE = {
+  a1: {
+    code: "a1",
+    className: "Android",
+    title: "Companion",
+    defaultSkills: ["computers", "linguistics"],
+    loadout: ["Personality Emulator", "Small pet or drone", "Hacking Spike", "Repair Foam"],
+  },
+  a2: {
+    code: "a2",
+    className: "Android",
+    title: "Liberator",
+    defaultSkills: ["computers", "linguistics"],
+    loadout: ["Signal Jammer", "Voice Modulator", "Another's Data Core", "Boarding Axe 1d10+2"],
+  },
+  a3: {
+    code: "a3",
+    className: "Android",
+    title: "Indentured",
+    defaultSkills: ["computers", "linguistics"],
+    loadout: ["Corporate Chip", "Small pet or drone", "Stun Baton 1d5+2", "Holographic projector"],
+  },
+  m1: {
+    code: "m1",
+    className: "Marine",
+    title: "Mercenary",
+    defaultSkills: ["military-training", "athletics"],
+    loadout: ["Combat Knife 1d5+3", "Infrared Goggles", "Flashbang", "Duct Tape"],
+  },
+  m2: {
+    code: "m2",
+    className: "Marine",
+    title: "Bounty Hunter",
+    defaultSkills: ["military-training", "athletics"],
+    loadout: ["Tranquilizer Rifle [2 ammo]", "Breaching Charge", "Binoculars", "Thermal Camera"],
+  },
+  m3: {
+    code: "m3",
+    className: "Marine",
+    title: "Fugitive",
+    defaultSkills: ["military-training", "athletics"],
+    loadout: ["Revolver 1d10+2 [3 ammo]", "Fake ID", "Inert Ankle Monitor", "Zip Ties"],
+  },
+  t1: {
+    code: "t1",
+    className: "Teamster",
+    title: "Union Representative",
+    defaultSkills: ["rimwise"],
+    loadout: ["Laser Cutter 1d5+2", "Industrial Drill", "Handheld Radio", "Toolbelt with tools"],
+  },
+  t2: {
+    code: "t2",
+    className: "Teamster",
+    title: "Executive",
+    defaultSkills: ["rimwise"],
+    loadout: ["Key Card", "Audio Recorder", "Motion Tracker", "Secret Documents"],
+  },
+  t3: {
+    code: "t3",
+    className: "Teamster",
+    title: "Journalist",
+    defaultSkills: ["rimwise"],
+    loadout: ["Camera", "Portable Scanner", "Crowbar 1d5+1", "Welding Torch"],
+  },
+  s1: {
+    code: "s1",
+    className: "Scientist",
+    title: "Analyst",
+    defaultSkills: ["field-medicine"],
+    loadout: ["Serum", "Surgical Kit", "Electronic Tool set", "Tranquilizer Injector"],
+  },
+  s2: {
+    code: "s2",
+    className: "Scientist",
+    title: "Professor",
+    defaultSkills: ["field-medicine"],
+    loadout: ["Serum", "Portable Computer Terminal", "Gene Sampler", "First Aid Kit"],
+  },
+  s3: {
+    code: "s3",
+    className: "Scientist",
+    title: "Curator",
+    defaultSkills: ["field-medicine"],
+    loadout: ["Stimpack", "Containment Supplies", "Bioscanner", "Face Mask"],
+  },
+}
+
+const SKILL_OPTIONS = [
+  { id: "athletics", label: "athletics" },
+  { id: "psychology", label: "psychology" },
+  { id: "history", label: "history" },
+  { id: "theology", label: "theology", parent: "history" },
+  { id: "computers", label: "computers" },
+  { id: "electronics", label: "electronics", parent: "computers" },
+  { id: "mathematics", label: "mathematics" },
+  { id: "engineering", label: "engineering", parent: "mathematics" },
+  { id: "physics", label: "physics", parent: "mathematics" },
+  { id: "cryptography", label: "cryptography", parent: "mathematics" },
+  { id: "art", label: "art" },
+  { id: "biology", label: "biology" },
+  { id: "botany", label: "botany", parent: "biology" },
+  { id: "zoology", label: "zoology", parent: "biology" },
+  { id: "pathology", label: "pathology", parent: "biology" },
+  { id: "rimwise", label: "rimwise (street smart)" },
+  { id: "chemistry", label: "chemistry" },
+  { id: "pharmacology", label: "pharmacology", parent: "chemistry" },
+  { id: "military-training", label: "military training" },
+  { id: "ranged-combat", label: "ranged combat", parent: "military-training" },
+  { id: "close-quarters-combat", label: "close quarters combat", parent: "military-training" },
+  { id: "infiltration", label: "infiltration", parent: "military-training" },
+  { id: "field-medicine", label: "field medicine" },
+  { id: "linguistics", label: "linguistics" },
+]
+
+const SKILL_LOOKUP = Object.fromEntries(SKILL_OPTIONS.map(skill => [skill.id, skill]))
+const ROOT_SKILLS = SKILL_OPTIONS.filter(skill => !skill.parent)
+const CHILD_SKILLS = SKILL_OPTIONS.filter(skill => skill.parent)
+
+const LEFT_SKILL_ORDER = [
+  "history",
+  "computers",
+  "art",
+  "mathematics",
+  "rimwise",
+  "field-medicine",
+  "biology",
+  "linguistics",
+  "chemistry",
+  "athletics",
+  "military-training",
+  "psychology",
+]
+
+const RIGHT_SKILL_ORDER = [
+  "theology",
+  "electronics",
+  "engineering",
+  "physics",
+  "cryptography",
+  "botany",
+  "zoology",
+  "pathology",
+  "pharmacology",
+  "ranged-combat",
+  "close-quarters-combat",
+  "infiltration",
+]
+
+const ORDERED_ROOT_SKILLS = LEFT_SKILL_ORDER.map(id => SKILL_LOOKUP[id]).filter(Boolean)
+const ORDERED_CHILD_SKILLS = RIGHT_SKILL_ORDER.map(id => SKILL_LOOKUP[id]).filter(Boolean)
+
+const MALE_NAMES = [
+  "Cooper Ashcroft",
+  "Nikolai Voss",
+  "Rowan Mercer",
+  "Jax Calder",
+  "Orion Pike",
+  "Kellan Stroud",
+  "Silas Rook",
+  "Damon Vale",
+  "Felix Warden",
+  "Tobias Quill",
+]
+
+const FEMALE_NAMES = [
+  "Mara Kestrel",
+  "Vera Holloway",
+  "Naomi Dray",
+  "Lyra Morrow",
+  "Iris Vance",
+  "Selene Archer",
+  "Nadia Crowe",
+  "Cora Fenwick",
+  "Elara Stone",
+  "Juniper Voss",
+]
+
+const NEUTRAL_NAMES = [
+  "Avery Nyx",
+  "Rin Calder",
+  "Sage Mercer",
+  "Quinn Hollow",
+  "Nova Pike",
+  "Ember Voss",
+  "Indigo Stroud",
+  "Rowe Archer",
+  "Kestrel Morrow",
+  "Onyx Vale",
+]
+
+function getLocationState() {
+  return {
+    pathname: window.location.pathname,
+    search: window.location.search,
+  }
+}
+
+function randomName(gender) {
+  if (gender === "female") {
+    return pick(FEMALE_NAMES)
+  }
+
+  if (gender === "neutral") {
+    return pick(NEUTRAL_NAMES)
+  }
+
+  return pick(MALE_NAMES)
+}
+
+function parseBackgroundCode(search) {
+  const params = new URLSearchParams(search)
+  return (params.get("b") || "").toLowerCase()
+}
+
 function rollAllFields() {
   const next = {}
   for (const field of FIELD_DEFS) {
@@ -463,12 +687,384 @@ function MapRouteView({ path, onNavigate }) {
   )
 }
 
-export default function App() {
-  const [values, setValues] = useState(() => generateAllFields())
-  const [path, setPath] = useState(() => window.location.pathname)
+function CreateRoute({ search, onNavigate }) {
+  const backgroundCode = parseBackgroundCode(search)
+  const hasValidBackground = Boolean(BACKGROUND_BY_CODE[backgroundCode])
+  const background = BACKGROUND_BY_CODE[backgroundCode] || BACKGROUND_BY_CODE.a1
+  const classMeta = CLASS_INFO[background.className]
+
+  const [step, setStep] = useState(1)
+  const [gender, setGender] = useState("male")
+  const [name, setName] = useState(() => randomName("male"))
+  const [selectedSkills, setSelectedSkills] = useState(() => new Set(background.defaultSkills))
+  const lockedSkills = new Set(background.defaultSkills)
 
   useEffect(() => {
-    const syncPath = () => setPath(window.location.pathname)
+    setStep(1)
+    setGender("male")
+    setName(randomName("male"))
+    setSelectedSkills(new Set(background.defaultSkills))
+  }, [background.code])
+
+  function toggleSkill(skillId) {
+    setSelectedSkills(prev => {
+      const next = new Set(prev)
+      const skill = SKILL_LOOKUP[skillId]
+      if (!skill) {
+        return prev
+      }
+
+      if (lockedSkills.has(skillId)) {
+        return prev
+      }
+
+      const totalLimit = lockedSkills.size + classMeta.skillPickCount
+
+      if (next.has(skillId)) {
+        next.delete(skillId)
+        for (const option of SKILL_OPTIONS) {
+          if (option.parent === skillId) {
+            next.delete(option.id)
+          }
+        }
+        return next
+      }
+
+      if (next.size >= totalLimit) {
+        return prev
+      }
+
+      if (skill.parent && !next.has(skill.parent)) {
+        return prev
+      }
+
+      next.add(skillId)
+      return next
+    })
+  }
+
+  function canSelectSkill(skill) {
+    if (lockedSkills.has(skill.id)) {
+      return true
+    }
+
+    if (selectedSkills.has(skill.id)) {
+      return true
+    }
+
+    const totalLimit = lockedSkills.size + classMeta.skillPickCount
+    if (selectedSkills.size >= totalLimit) {
+      return false
+    }
+
+    if (skill.parent && !selectedSkills.has(skill.parent)) {
+      return false
+    }
+
+    return true
+  }
+
+  function nextStep() {
+    setStep(prev => Math.min(TOTAL_CREATOR_STEPS, prev + 1))
+  }
+
+  function prevStep() {
+    setStep(prev => Math.max(1, prev - 1))
+  }
+
+  const additionalSkillCount = selectedSkills.size - lockedSkills.size
+  const skillCountComplete = additionalSkillCount === classMeta.skillPickCount
+  const canGoNext = step === 1 ? skillCountComplete : step === 2 ? name.trim().length > 0 : true
+
+  const selectedSkillLabels = SKILL_OPTIONS.filter(skill => selectedSkills.has(skill.id)).map(skill => skill.label)
+  const displayBackground = `${background.className} - ${background.title}`
+  const linksWrapRef = useRef(null)
+  const parentSkillRefs = useRef({})
+  const childSkillRefs = useRef({})
+  const [linkPaths, setLinkPaths] = useState([])
+
+  useLayoutEffect(() => {
+    if (step !== 1 || !linksWrapRef.current) {
+      return undefined
+    }
+
+    function buildPaths() {
+      if (!linksWrapRef.current) {
+        return
+      }
+
+      const wrapRect = linksWrapRef.current.getBoundingClientRect()
+      const nextPaths = []
+
+      for (const child of ORDERED_CHILD_SKILLS) {
+        const parentNode = parentSkillRefs.current[child.parent]
+        const childNode = childSkillRefs.current[child.id]
+        if (!parentNode || !childNode) {
+          continue
+        }
+
+        const parentRect = parentNode.getBoundingClientRect()
+        const childRect = childNode.getBoundingClientRect()
+        const startX = parentRect.right - wrapRect.left
+        const startY = parentRect.top - wrapRect.top + parentRect.height / 2
+        const endX = childRect.left - wrapRect.left
+        const endY = childRect.top - wrapRect.top + childRect.height / 2
+        const cp1X = startX + (endX - startX) * 0.36
+        const cp2X = startX + (endX - startX) * 0.64
+        nextPaths.push(`M ${startX} ${startY} C ${cp1X} ${startY} ${cp2X} ${endY} ${endX} ${endY}`)
+      }
+
+      setLinkPaths(nextPaths)
+    }
+
+    const frame = window.requestAnimationFrame(buildPaths)
+    window.addEventListener("resize", buildPaths)
+
+    const observer = new ResizeObserver(buildPaths)
+    observer.observe(linksWrapRef.current)
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      observer.disconnect()
+      window.removeEventListener("resize", buildPaths)
+    }
+  }, [selectedSkills, step])
+
+  return (
+    <main className="mothership-app creator-app">
+      <section className="generator-card creator-card">
+        <header className="app-header">
+          <h1>Create Character</h1>
+          <p>Step {step} of {TOTAL_CREATOR_STEPS}</p>
+          {!hasValidBackground ? (
+            <p className="creator-warning">Unknown background code. Using a1. Try /c?b=a1, /c?b=m2, /c?b=t3, etc.</p>
+          ) : null}
+        </header>
+
+        <div className={`creator-panel ${step === 1 ? "creator-panel-step1" : ""}`}>
+          {step === 1 ? (
+            <>
+              <div className="background-pill">
+                <img src={classMeta.icon} alt={background.className} className="background-icon" />
+                <div>
+                  <strong>{displayBackground}</strong>
+                  <p>
+                    Pick {classMeta.skillPickCount} additional skills.
+                  </p>
+                </div>
+              </div>
+
+              <div className="skills-columns" ref={linksWrapRef}>
+                <svg className="skills-links-svg" aria-hidden="true">
+                  {linkPaths.map(path => (
+                    <path key={path} d={path} className="skills-link-path" />
+                  ))}
+                </svg>
+
+                <section className="skills-column">
+                  <h3 className="skills-column-title">Entry Skills</h3>
+                  <div className="skills-column-list">
+                    {ORDERED_ROOT_SKILLS.map(skill => {
+                      const active = selectedSkills.has(skill.id)
+                      const disabled = !canSelectSkill(skill)
+                      const locked = lockedSkills.has(skill.id)
+
+                      return (
+                        <button
+                          key={skill.id}
+                          type="button"
+                          onClick={() => toggleSkill(skill.id)}
+                          ref={node => {
+                            parentSkillRefs.current[skill.id] = node
+                          }}
+                          className={`skill-chip ${active ? "active" : ""} ${locked ? "locked" : ""}`}
+                          disabled={disabled}
+                          title={locked ? "Required by background" : undefined}
+                        >
+                          {skill.label}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </section>
+
+                <section className="skills-column skills-column-prereq">
+                  <h3 className="skills-column-title">Specialties</h3>
+                  <div className="skills-column-list">
+                    {ORDERED_CHILD_SKILLS.map(skill => {
+                      const active = selectedSkills.has(skill.id)
+                      const disabled = !canSelectSkill(skill)
+                      const locked = lockedSkills.has(skill.id)
+
+                      return (
+                        <button
+                          key={skill.id}
+                          type="button"
+                          onClick={() => toggleSkill(skill.id)}
+                          ref={node => {
+                            childSkillRefs.current[skill.id] = node
+                          }}
+                          className={`skill-chip skill-child-chip ${active ? "active" : ""} ${locked ? "locked" : ""}`}
+                          disabled={disabled}
+                          title={locked ? "Required by background" : `Requires ${SKILL_LOOKUP[skill.parent].label}`}
+                        >
+                          {skill.label}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </section>
+              </div>
+
+              <p className="creator-note">
+                {additionalSkillCount} / {classMeta.skillPickCount} additional selected
+              </p>
+            </>
+          ) : null}
+
+          {step === 2 ? (
+            <>
+              <p className="creator-note">Pick a name.</p>
+
+              <div className="field-control-wrap">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={event => setName(event.target.value)}
+                  aria-label="Character name"
+                  className="field-input"
+                  placeholder="Enter character name"
+                />
+              </div>
+
+              <section className="random-name-card" aria-label="Random name options">
+                <h3 className="random-name-title">Random By Gender</h3>
+                <p className="random-name-help">Choose a style for random name.</p>
+                <div className="gender-toggle-row" role="group" aria-label="Random name style">
+                  <button
+                    type="button"
+                    className={`gender-btn ${gender === "male" ? "active" : ""}`}
+                    onClick={() => {
+                      setGender("male")
+                      setName(randomName("male"))
+                    }}
+                  >
+                    <img src="/male.svg" alt="Male" />
+                    Male
+                  </button>
+                  <button
+                    type="button"
+                    className={`gender-btn ${gender === "female" ? "active" : ""}`}
+                    onClick={() => {
+                      setGender("female")
+                      setName(randomName("female"))
+                    }}
+                  >
+                    <img src="/female.svg" alt="Female" />
+                    Female
+                  </button>
+                  <button
+                    type="button"
+                    className={`gender-btn ${gender === "neutral" ? "active" : ""}`}
+                    onClick={() => {
+                      setGender("neutral")
+                      setName(randomName("neutral"))
+                    }}
+                  >
+                    <img src="/gender_neutral.svg" alt="Gender neutral" />
+                    Neutral
+                  </button>
+                </div>
+              </section>
+            </>
+          ) : null}
+
+          {step === 3 ? (
+            <>
+              <p className="creator-note" style={{fontSize: "1.2em", textAlign: "center"}}>Write <b>{name || "Unnamed"}</b> and your background, <b>{background.title}</b>, on your dry erase nameplate.</p>
+              <br/>
+              <div className="nameplate-lines" aria-label="Name and background">
+                <p>{name || "Unnamed"}</p>
+                <br/>
+                <p>{background.title}</p>
+              </div>
+              <br/>
+              <img src="/example_nameplate.webp" alt="Example nameplate" className="creator-example creator-example-step3" />
+            </>
+          ) : null}
+
+          {step === 4 ? (
+            <>
+              <p className="creator-note" style={{fontSize: "1.2em"}}>Pick a portrait and place it on the top gap of the nameplate.</p>
+              <br/>
+              <img src="/example_portrait.webp" alt="Example portrait placement" className="creator-example creator-example-step4" />
+            </>
+          ) : null}
+
+          {step === 5 ? (
+            <>
+              <p className="creator-note" style={{fontSize: "1.3em"}}>Copy these loadout items to your booklet.</p>
+              <ul className="creator-list" style={{fontSize: "1.3em"}}>
+                {background.loadout.map(item => (
+                  <li key={item}><b>{item}</b></li>
+                ))}
+              </ul>
+              <img src="/example_item.webp" alt="Example loadout items" className="creator-example creator-example-step5" />
+            </>
+          ) : null}
+
+          {step === 6 ? (
+            <>
+              <p className="creator-note" style={{fontSize: "1.3em"}}>Copy your skills to your booklet.</p>
+              <ul className="creator-list" style={{fontSize: "1.3em"}}>
+                {selectedSkillLabels.map(skill => (
+                  <li key={skill}><b>{skill}</b></li>
+                ))}
+              </ul>
+              <img src="/example_skills.webp" alt="Example skill list" className="creator-example creator-example-step6" />
+            </>
+          ) : null}
+
+          {step === 7 ? (
+            <>
+              <p className="creator-note">You're done! You can hand back your role card.</p>
+              <div className="background-pill">
+                <img src={classMeta.icon} alt={background.className} className="background-icon" />
+                <div>
+                  <strong>{name || "Unnamed"}</strong>
+                  <p>{displayBackground}</p>
+                </div>
+              </div>
+            </>
+          ) : null}
+        </div>
+
+        <footer className="creator-nav">
+          <button type="button" className="roll-all-btn" onClick={prevStep} disabled={step === 1}>
+            Back
+          </button>
+
+          {step < TOTAL_CREATOR_STEPS ? (
+            <button type="button" className="roll-all-btn" onClick={nextStep} disabled={!canGoNext}>
+              Next
+            </button>
+          ) : (
+            <button type="button" className="roll-all-btn" onClick={() => onNavigate("/")}>
+              Optional traits
+            </button>
+          )}
+        </footer>
+      </section>
+    </main>
+  )
+}
+
+export default function App() {
+  const [values, setValues] = useState(() => generateAllFields())
+  const [location, setLocation] = useState(() => getLocationState())
+
+  useEffect(() => {
+    const syncPath = () => setLocation(getLocationState())
     window.addEventListener("popstate", syncPath)
     return () => window.removeEventListener("popstate", syncPath)
   }, [])
@@ -478,13 +1074,13 @@ export default function App() {
       return
     }
 
-    if (MAP_ROUTES[path] && MAP_ROUTES[nextPath]) {
+    if (MAP_ROUTES[location.pathname] && MAP_ROUTES[nextPath]) {
       window.location.assign(nextPath)
       return
     }
 
     window.history.pushState({}, "", nextPath)
-    setPath(nextPath)
+    setLocation(getLocationState())
   }
 
   function rollOne(key, roller) {
@@ -494,15 +1090,12 @@ export default function App() {
     }))
   }
 
-  function handleRollAll() {
-    setValues(prev => ({
-      ...prev,
-      ...rollAllFields(),
-    }))
+  if (MAP_ROUTES[location.pathname]) {
+    return <MapRouteView path={location.pathname} onNavigate={navigateTo} />
   }
 
-  if (MAP_ROUTES[path]) {
-    return <MapRouteView path={path} onNavigate={navigateTo} />
+  if (location.pathname === CREATE_ROUTE) {
+    return <CreateRoute search={location.search} onNavigate={navigateTo} />
   }
 
   return (
@@ -510,10 +1103,7 @@ export default function App() {
       <section className="generator-card">
         <header className="app-header">
           <h1>Mothership</h1>
-          <p>Optional character details. Re-roll as many times as you'd like. Use these for inspiration.</p>
-          <button type="button" className="roll-all-btn" onClick={handleRollAll}>
-            Roll All
-          </button>
+          <p>Optional character details. Re-roll as many times as you'd like. Write any inspiring details into your booklet.</p>
         </header>
 
         <div className="field-list">
