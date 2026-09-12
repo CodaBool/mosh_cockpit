@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 const FLAWS = [
   "Quick to Anger",
@@ -322,6 +322,12 @@ const FIELD_DEFS = [
   { key: "credits", label: "Credits", roll: () => `${rollCredits()} cr` },
 ]
 
+const MAP_ROUTES = {
+  "/gd-1": { label: "Floors 1,2,4,6", image: "/floor1.webp", alt: "Deck map floors 1, 2, 4, and 6" },
+  "/gd-3": { label: "Floor 3", image: "/floor3.webp", alt: "Deck map floor 3" },
+  "/gd-all": { label: "Overview", image: "/overview.webp", alt: "Deck map overview" },
+}
+
 function rollAllFields() {
   const next = {}
   for (const field of FIELD_DEFS) {
@@ -356,8 +362,111 @@ function FieldRow({ label, value, onRoll }) {
   )
 }
 
+function MapNavBubble({ currentPath, onNavigate }) {
+  const bubbleRef = useRef(null)
+
+  useEffect(() => {
+    const viewport = window.visualViewport
+    if (!viewport) {
+      return undefined
+    }
+
+    let frameId = null
+
+    function applyBubblePosition() {
+      const scale = viewport.scale || 1
+      const inset = 12
+      const x = viewport.offsetLeft + viewport.width - inset
+      const y = viewport.offsetTop + viewport.height - inset
+
+      if (!bubbleRef.current) {
+        return
+      }
+
+      bubbleRef.current.style.left = `${x}px`
+      bubbleRef.current.style.top = `${y}px`
+      bubbleRef.current.style.transform = `translate(-100%, -100%) scale(${1 / scale})`
+    }
+
+    function syncBubblePosition() {
+      if (frameId !== null) {
+        return
+      }
+      frameId = window.requestAnimationFrame(() => {
+        frameId = null
+        applyBubblePosition()
+      })
+    }
+
+    syncBubblePosition()
+    viewport.addEventListener("resize", syncBubblePosition)
+    viewport.addEventListener("scroll", syncBubblePosition)
+    return () => {
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId)
+      }
+      viewport.removeEventListener("resize", syncBubblePosition)
+      viewport.removeEventListener("scroll", syncBubblePosition)
+    }
+  }, [])
+
+  return (
+    <nav ref={bubbleRef} className="map-nav-bubble" aria-label="Map navigation">
+      {Object.entries(MAP_ROUTES).map(([path, config]) => {
+        const isActive = currentPath === path
+        return (
+          <button
+            key={path}
+            type="button"
+            onClick={() => onNavigate(path)}
+            className={`map-nav-link ${isActive ? "active" : ""}`}
+            aria-current={isActive ? "page" : undefined}
+          >
+            {config.label}
+          </button>
+        )
+      })}
+    </nav>
+  )
+}
+
+function MapRouteView({ path, onNavigate }) {
+  const config = MAP_ROUTES[path]
+  if (!config) {
+    return null
+  }
+
+  return (
+    <main className="map-page">
+      <img src={config.image} alt={config.alt} className="map-image" />
+      <MapNavBubble currentPath={path} onNavigate={onNavigate} />
+    </main>
+  )
+}
+
 export default function App() {
   const [values, setValues] = useState(() => rollAllFields())
+  const [path, setPath] = useState(() => window.location.pathname)
+
+  useEffect(() => {
+    const syncPath = () => setPath(window.location.pathname)
+    window.addEventListener("popstate", syncPath)
+    return () => window.removeEventListener("popstate", syncPath)
+  }, [])
+
+  function navigateTo(nextPath) {
+    if (window.location.pathname === nextPath) {
+      return
+    }
+
+    if (MAP_ROUTES[path] && MAP_ROUTES[nextPath]) {
+      window.location.assign(nextPath)
+      return
+    }
+
+    window.history.pushState({}, "", nextPath)
+    setPath(nextPath)
+  }
 
   function rollOne(key, roller) {
     setValues(prev => ({
@@ -368,6 +477,10 @@ export default function App() {
 
   function handleRollAll() {
     setValues(rollAllFields())
+  }
+
+  if (MAP_ROUTES[path]) {
+    return <MapRouteView path={path} onNavigate={navigateTo} />
   }
 
   return (
