@@ -91,6 +91,10 @@ input {
   gap: 0.5rem;
 }
 
+.field-control-wrap-static {
+  grid-template-columns: 1fr;
+}
+
 .field-input {
   width: 100%;
   border: 1px solid #111;

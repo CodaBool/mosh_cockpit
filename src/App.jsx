@@ -319,7 +319,13 @@ const FIELD_DEFS = [
   { key: "face", label: "Face", roll: () => pick(SIMPLE_TRAITS.face) },
   { key: "speech", label: "Speech", roll: () => pick(SIMPLE_TRAITS.speech) },
   { key: "misfortune", label: "Misfortune", roll: () => pick(SIMPLE_TRAITS.misfortune) },
-  { key: "credits", label: "Credits", roll: () => `${rollCredits()} cr` },
+  {
+    key: "credits",
+    label: "Credits",
+    roll: () => `${rollCredits()} cr`,
+    canReroll: false,
+    includeInRollAll: false,
+  },
 ]
 
 const MAP_ROUTES = {
@@ -331,16 +337,27 @@ const MAP_ROUTES = {
 function rollAllFields() {
   const next = {}
   for (const field of FIELD_DEFS) {
+    if (field.includeInRollAll === false) {
+      continue
+    }
     next[field.key] = field.roll()
   }
   return next
 }
 
-function FieldRow({ label, value, onRoll }) {
+function generateAllFields() {
+  const next = {}
+  for (const field of FIELD_DEFS) {
+    next[field.key] = field.roll()
+  }
+  return next
+}
+
+function FieldRow({ label, value, onRoll, canReroll = true }) {
   return (
     <div className="field-row">
       <label className="field-label">{label}</label>
-      <div className="field-control-wrap">
+      <div className={`field-control-wrap ${canReroll ? "" : "field-control-wrap-static"}`}>
         <input
           type="text"
           value={value}
@@ -348,15 +365,17 @@ function FieldRow({ label, value, onRoll }) {
           aria-label={label}
           className="field-input"
         />
-        <button
-          type="button"
-          onClick={onRoll}
-          className="field-roll-btn"
-          aria-label={`Reroll ${label}`}
-          title={`Reroll ${label}`}
-        >
-          <img src="/dice.svg" alt="" aria-hidden="true" className="dice-icon" />
-        </button>
+        {canReroll ? (
+          <button
+            type="button"
+            onClick={onRoll}
+            className="field-roll-btn"
+            aria-label={`Reroll ${label}`}
+            title={`Reroll ${label}`}
+          >
+            <img src="/dice.svg" alt="" aria-hidden="true" className="dice-icon" />
+          </button>
+        ) : null}
       </div>
     </div>
   )
@@ -445,7 +464,7 @@ function MapRouteView({ path, onNavigate }) {
 }
 
 export default function App() {
-  const [values, setValues] = useState(() => rollAllFields())
+  const [values, setValues] = useState(() => generateAllFields())
   const [path, setPath] = useState(() => window.location.pathname)
 
   useEffect(() => {
@@ -476,7 +495,10 @@ export default function App() {
   }
 
   function handleRollAll() {
-    setValues(rollAllFields())
+    setValues(prev => ({
+      ...prev,
+      ...rollAllFields(),
+    }))
   }
 
   if (MAP_ROUTES[path]) {
@@ -488,7 +510,7 @@ export default function App() {
       <section className="generator-card">
         <header className="app-header">
           <h1>Mothership</h1>
-          <p>Character Detail Generator</p>
+          <p>Optional character details. Re-roll as many times as you'd like. Use these for inspiration.</p>
           <button type="button" className="roll-all-btn" onClick={handleRollAll}>
             Roll All
           </button>
@@ -501,6 +523,7 @@ export default function App() {
               label={field.label}
               value={values[field.key]}
               onRoll={() => rollOne(field.key, field.roll)}
+              canReroll={field.canReroll !== false}
             />
           ))}
         </div>
